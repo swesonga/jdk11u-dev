@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -21,8 +21,8 @@
  * questions.
  *
  */
-#ifndef SHARE_VM_LOGGING_LOGOUTPUTLIST_HPP
-#define SHARE_VM_LOGGING_LOGOUTPUTLIST_HPP
+#ifndef SHARE_LOGGING_LOGOUTPUTLIST_HPP
+#define SHARE_LOGGING_LOGOUTPUTLIST_HPP
 
 #include "logging/logLevel.hpp"
 #include "memory/allocation.hpp"
@@ -63,7 +63,6 @@ class LogOutputList {
   // Bookkeeping functions to keep track of number of active readers/iterators for the list.
   jint increase_readers();
   jint decrease_readers();
-  void wait_until_no_readers() const;
 
  public:
   LogOutputList() : _active_readers(0) {
@@ -87,6 +86,11 @@ class LogOutputList {
 
   // Set (add/update/remove) the output to the specified level.
   void set_output_level(LogOutput* output, LogLevelType level);
+
+  // Removes all outputs. Equivalent of set_output_level(out, Off)
+  // for all outputs.
+  void clear();
+  void wait_until_no_readers() const;
 
   class Iterator {
     friend class LogOutputList;
@@ -142,4 +146,4 @@ class LogOutputList {
   }
 };
 
-#endif // SHARE_VM_LOGGING_LOGOUTPUTLIST_HPP
+#endif // SHARE_LOGGING_LOGOUTPUTLIST_HPP
