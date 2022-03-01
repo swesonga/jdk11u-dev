@@ -105,7 +105,7 @@ class AsyncLogMapIterator {
       LogDecorations decorations(LogLevel::Warning, none::tagset(), output->decorators());
       stringStream ss;
       ss.print(UINT32_FORMAT_W(6) " messages dropped due to async logging", *counter);
-      AsyncLogMessage msg(*output, decorations, ss.as_string(true /*c_heap*/));
+      AsyncLogMessage msg(*output, decorations, ss.as_string());
       _logs.push_back(msg);
       *counter = 0;
     }
@@ -140,7 +140,7 @@ void AsyncLogWriter::write() {
   }
 
   while (!it.is_empty()) {
-    AsyncLogMessage* e = it.next();
+    AsyncLogMessage* e = (AsyncLogMessage*)it.next();
     char* msg = e->message();
 
     if (msg != nullptr) {
@@ -169,7 +169,7 @@ void AsyncLogWriter::initialize() {
 
   AsyncLogWriter* self = new AsyncLogWriter();
   if (self->_initialized) {
-    Atomic::release_store_fence(&AsyncLogWriter::_instance, self);
+    OrderAccess::release_store_fence(&AsyncLogWriter::_instance, self);
     // All readers of _instance after the fence see non-NULL.
     // We use LogOutputList's RCU counters to ensure all synchronous logsites have completed.
     // After that, we start AsyncLog Thread and it exclusively takes over all logging I/O.

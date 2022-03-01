@@ -30,6 +30,34 @@
 #include "logTestUtils.inline.hpp"
 #include "unittest.hpp"
 
+#include "memory/allocation.hpp"
+
+// A simplistic template providing a general save-restore pattern through a
+// local auto/stack object (scope).
+//
+template<typename T> class AutoSaveRestore : public StackObj {
+public:
+  AutoSaveRestore(T &loc) : _loc(loc) {
+    _value = loc;
+  }
+  ~AutoSaveRestore() {
+    _loc = _value;
+  }
+private:
+  T &_loc;
+  T _value;
+};
+
+// A simplistic template providing a general modify-restore pattern through a
+// local auto/stack object (scope).
+//
+template<typename T> class AutoModifyRestore : private AutoSaveRestore<T> {
+public:
+  AutoModifyRestore(T &loc, T value) : AutoSaveRestore<T>(loc) {
+    loc = value;
+  }
+};
+
 class AsyncLogTest : public LogTestFixture {
  public:
   AsyncLogTest() {
@@ -99,7 +127,8 @@ TEST_VM(AsyncLogBufferTest, fifo) {
   EXPECT_EQ((size_t)N, result.size());
   LinkedListIterator<int> it(result.head());
   for (int i=0; i<N; ++i) {
-    int* e = it.next();
+      // Why does this work in JDK17?
+    int* e = (int *)it.next();
     EXPECT_EQ(i, *e);
   }
 }
