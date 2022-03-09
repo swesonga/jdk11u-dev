@@ -30,6 +30,7 @@
 #include "oops/oop.hpp"
 #include "oops/symbol.hpp"
 #include "runtime/handles.hpp"
+#include "utilities/resourceHash.hpp"
 
 // This is a generic hashtable, designed to be used for the symbol
 // and string tables.

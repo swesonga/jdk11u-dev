@@ -145,7 +145,7 @@ class AsyncLogWriter : public NonJavaThread {
 
   // The memory use of each AsyncLogMessage (payload) consists of itself and a variable-length c-str message.
   // A regular logging message is smaller than vwrite_buffer_size, which is defined in logtagset.cpp
-  const size_t _buffer_max_size = {AsyncLogBufferSize / (sizeof(AsyncLogMessage) + vwrite_buffer_size)};
+  size_t _buffer_max_size;// = {AsyncLogBufferSize / (sizeof(AsyncLogMessage) + vwrite_buffer_size)};
 
   AsyncLogWriter();
   void enqueue_locked(const AsyncLogMessage& msg);
@@ -154,9 +154,9 @@ class AsyncLogWriter : public NonJavaThread {
   void pre_run() {
     log_debug(logging, thread)("starting AsyncLog Thread tid = " INTX_FORMAT, os::current_thread_id());
   }
-  char* name() const override { return (char*)"AsyncLog Thread"; }
-  bool is_Named_thread() const override { return true; }
-  void print_on(outputStream* st) const override {
+  char* name() const { return (char*)"AsyncLog Thread"; }
+  bool is_Named_thread() const { return true; }
+  void print_on(outputStream* st) const {
     st->print("\"%s\" ", name());
     Thread::print_on(st);
     st->cr();

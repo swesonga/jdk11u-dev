@@ -82,7 +82,8 @@ void AsyncLogWriter::enqueue(LogFileOutput& output, LogMessageBuffer::Iterator m
 
 AsyncLogWriter::AsyncLogWriter()
   : _initialized(false),
-    _stats(17 /*table_size*/) {
+    _stats(17 /*table_size*/),
+    _buffer_max_size(AsyncLogBufferSize / (sizeof(AsyncLogMessage) + vwrite_buffer_size)) {
   if (os::create_thread(this, os::asynclog_thread)) {
     _initialized = true;
   } else {
@@ -99,10 +100,11 @@ class AsyncLogMapIterator {
  public:
   AsyncLogMapIterator(AsyncLogBuffer& logs) :_logs(logs) {}
   bool do_entry(LogFileOutput* output, uint32_t* counter) {
-    using none = LogTagSetMapping<LogTag::__NO_TAG>;
+    // error: alias declarations are a C++11 extension [-Werror,-Wc++11-extensions]
+    // using none = LogTagSetMapping<LogTag::__NO_TAG>;
 
     if (*counter > 0) {
-      LogDecorations decorations(LogLevel::Warning, none::tagset(), output->decorators());
+      LogDecorations decorations(LogLevel::Warning, LogTagSetMapping<LogTag::__NO_TAG>::tagset(), output->decorators());
       stringStream ss;
       ss.print(UINT32_FORMAT_W(6) " messages dropped due to async logging", *counter);
       AsyncLogMessage msg(*output, decorations, ss.as_string());
