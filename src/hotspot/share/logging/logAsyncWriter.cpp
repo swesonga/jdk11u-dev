@@ -28,6 +28,10 @@
 #include "logging/logHandle.hpp"
 #include "runtime/atomic.hpp"
 
+#ifdef __linux__
+#define nullptr 0
+#endif
+
 Semaphore AsyncLogWriter::_sem(0);
 Semaphore AsyncLogWriter::_io_sem(1);
 

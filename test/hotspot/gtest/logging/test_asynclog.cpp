@@ -32,6 +32,10 @@
 
 #include "memory/allocation.hpp"
 
+#ifdef __linux__
+#define nullptr 0
+#endif
+
 // A simplistic template providing a general save-restore pattern through a
 // local auto/stack object (scope).
 //

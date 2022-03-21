@@ -33,6 +33,10 @@
 #include "utilities/globalDefinitions.hpp"
 #include "utilities/defaultStream.hpp"
 
+#ifdef __linux__
+#define nullptr 0
+#endif
+
 const char* const LogFileOutput::Prefix = "file=";
 const char* const LogFileOutput::FileOpenMode = "a";
 const char* const LogFileOutput::PidFilenamePlaceholder = "%p";
