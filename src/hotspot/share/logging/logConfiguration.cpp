@@ -103,7 +103,6 @@ void LogConfiguration::post_initialize() {
 
 void LogConfiguration::initialize(jlong vm_start_time) {
   LogFileOutput::set_file_name_parameters(vm_start_time);
-  LogDecorations::initialize(vm_start_time);
   assert(_outputs == NULL, "Should not initialize _outputs before this function, initialize called twice?");
   _outputs = NEW_C_HEAP_ARRAY(LogOutput*, 2, mtLogging);
   _outputs[0] = &StdoutLog;

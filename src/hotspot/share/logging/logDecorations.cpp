@@ -34,12 +34,12 @@ const char* volatile LogDecorations::_host_name = NULL;
 const int LogDecorations::_pid = os::current_process_id(); // This is safe to call during dynamic initialization.
 
 const char* LogDecorations::host_name() {
-  const char* host_name = Atomic::load_acquire(&_host_name);
+  const char* host_name = OrderAccess::load_acquire(&_host_name);
   if (host_name == NULL) {
     char buffer[1024];
     if (os::get_host_name(buffer, sizeof(buffer))) {
       host_name = os::strdup_check_oom(buffer);
-      const char* old_value = Atomic::cmpxchg(&_host_name, (const char*)NULL, host_name);
+      const char* old_value = Atomic::cmpxchg(host_name, &_host_name, (const char*)NULL);
       if (old_value != NULL) {
         os::free((void *) host_name);
         host_name = old_value;
