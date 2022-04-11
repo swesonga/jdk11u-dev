@@ -28,7 +28,7 @@
 #include "logging/logFileOutput.hpp"
 #include "logging/logMessageBuffer.hpp"
 #include "memory/resourceArea.hpp"
-#include "runtime/nonJavaThread.hpp"
+#include "runtime/thread.hpp"
 #include "utilities/hashtable.hpp"
 #include "utilities/linkedlist.hpp"
 
@@ -152,10 +152,6 @@ class AsyncLogWriter : public NonJavaThread {
   void enqueue_locked(const AsyncLogMessage& msg);
   void write();
   void run() override;
-  void pre_run() override {
-    NonJavaThread::pre_run();
-    log_debug(logging, thread)("starting AsyncLog Thread tid = " INTX_FORMAT, os::current_thread_id());
-  }
   char* name() const override { return (char*)"AsyncLog Thread"; }
   bool is_Named_thread() const override { return true; }
   void print_on(outputStream* st) const override {

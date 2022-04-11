@@ -29,6 +29,7 @@
 #include "logTestFixture.hpp"
 #include "logTestUtils.inline.hpp"
 #include "unittest.hpp"
+#include "utilities/autoRestore.hpp"
 
 class AsyncLogTest : public LogTestFixture {
  public:
