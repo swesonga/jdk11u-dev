@@ -1593,7 +1593,22 @@ const char* os::dll_file_extension() { return ".so"; }
 
 // This must be hard coded because it's the system's temporary
 // directory not the java application's temp directory, ala java.io.tmpdir.
-const char* os::get_temp_directory() { return "/tmp"; }
+const char* os::get_temp_directory() {
+    static char tmp_path[JVM_MAXPATHLEN] = {'\0'};
+    static const char* default_tmp_path = "/tmp";
+
+    if (SystemTempPath == NULL)
+        return default_tmp_path;
+
+    if (strlen(tmp_path) == 0) {
+        if (strlen(SystemTempPath) < sizeof(tmp_path)) {
+            strcpy(tmp_path, SystemTempPath);
+        } else {
+            strcpy(tmp_path, default_tmp_path);
+        }
+    }
+    return tmp_path;
+}
 
 static bool file_exists(const char* filename) {
   struct stat statbuf;
