@@ -2685,7 +2685,7 @@ define_pd_global(uint64_t,MaxRAM,                    1ULL*G);
   experimental(bool, UseFastUnorderedTimeStamps, false,                     \
           "Use platform unstable time where supported for timestamps only") \
                                                                             \
-  experimental(ccstr, SystemTempPath, NULL,                                 \
+  diagnostic(ccstr, SystemTempPath, NULL,                                   \
           "An alternative path to use for the system's temporary directory "\
           "instead of hardcoded paths like /tmp ")
 

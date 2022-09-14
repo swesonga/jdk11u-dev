@@ -1591,10 +1591,10 @@ int os::current_process_id() {
 
 const char* os::dll_file_extension() { return ".so"; }
 
-// This must be hard coded because it's the system's temporary
-// directory not the java application's temp directory, ala java.io.tmpdir.
+// This method allows for overriding the system's temporary directory via the -XX:SystemTempPath option
 const char* os::get_temp_directory() {
-    static char tmp_path[JVM_MAXPATHLEN] = {'\0'};
+    // A 32-character buffer is set aside for the formatting code in linux_wrap_code
+    static char tmp_path[PATH_MAX - 32] = {'\0'};
     static const char* default_tmp_path = "/tmp";
 
     if (SystemTempPath == NULL)
