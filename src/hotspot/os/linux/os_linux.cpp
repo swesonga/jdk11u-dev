@@ -1591,24 +1591,53 @@ int os::current_process_id() {
 
 const char* os::dll_file_extension() { return ".so"; }
 
+// Use half of PATH_MAX characters for the custom temporary path to allow
+// paths of length (PATH_MAX / 2) to be appended to the custom temp path.
+#define MAX_CACHED_TEMP_PATH_LENGTH (PATH_MAX / 2)
+
 // This method allows for overriding the system's temporary directory via the -XX:SystemTempPath option
 const char* os::get_temp_directory() {
-    // A 32-character buffer is set aside for the formatting code in linux_wrap_code
-    static char tmp_path[PATH_MAX - 32] = {'\0'};
+    static char cached_temp_path[MAX_CACHED_TEMP_PATH_LENGTH] = {'\0'};
     static const char* default_tmp_path = "/tmp";
 
-    if (SystemTempPath == NULL)
-        return default_tmp_path;
+    if (strlen(cached_temp_path) == 0) {
+        boolean use_default_tmp_path = true;
 
-    if (strlen(tmp_path) == 0) {
-        size_t new_tmp_path_length = strlen(SystemTempPath);
-        if (new_tmp_path_length > 0 && new_tmp_path_length < sizeof(tmp_path)) {
-            strcpy(tmp_path, SystemTempPath);
-        } else {
-            strcpy(tmp_path, default_tmp_path);
+        if (SystemTempPath != NULL) {
+            size_t new_tmp_path_length = strlen(SystemTempPath);
+
+            assert(new_tmp_path_length > 0, "SystemTempPath must have positive length");
+            assert(new_tmp_path_length < sizeof(cached_temp_path), "SystemTempPath exceeds allowed length");
+
+            if (new_tmp_path_length > 0 && new_tmp_path_length < sizeof(cached_temp_path)) {
+                struct stat stat_buf;
+                boolean path_exists = os::stat(SystemTempPath, &stat_buf) == 0;
+
+                if (path_exists) {
+                    if (S_ISDIR(stat_buf.st_mode)) {
+                        if (0 == access(SystemTempPath)) {
+                            use_default_tmp_path = false;
+                        } else {
+                            warning("Cannot access the specified SystemTempPath");
+                        }
+                    } else {
+                        warning("SystemTempPath must be a directory");
+                    }
+                } else {
+                    warning("Cannot find the specified SystemTempPath");
+                }
+            } else {
+                warning("Invalid SystemTempPath length");
+            }
+
+            if (use_default_tmp_path) {
+                warning("Ignoring SystemTempPath and using the default temp path");
+            }
         }
+
+        strcpy(cached_temp_path, use_default_tmp_path ? default_tmp_path : SystemTempPath);
     }
-    return tmp_path;
+    return cached_temp_path;
 }
 
 static bool file_exists(const char* filename) {
