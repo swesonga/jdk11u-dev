@@ -1601,7 +1601,8 @@ const char* os::get_temp_directory() {
         return default_tmp_path;
 
     if (strlen(tmp_path) == 0) {
-        if (strlen(SystemTempPath) < sizeof(tmp_path)) {
+        size_t new_tmp_path_length = strlen(SystemTempPath);
+        if (new_tmp_path_length > 0 && new_tmp_path_length < sizeof(tmp_path)) {
             strcpy(tmp_path, SystemTempPath);
         } else {
             strcpy(tmp_path, default_tmp_path);
