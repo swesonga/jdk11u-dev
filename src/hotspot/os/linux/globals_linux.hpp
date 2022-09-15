@@ -82,7 +82,11 @@
           "be dumped into the corefile.")                               \
                                                                         \
   diagnostic(bool, UseCpuAllocPath, false,                              \
-             "Use CPU_ALLOC code path in os::active_processor_count ")
+             "Use CPU_ALLOC code path in os::active_processor_count ")  \
+                                                                        \
+  diagnostic(ccstr, SystemTempPath, NULL,                               \
+          "An alternative path to use for the system's temporary "      \
+          "directory instead of hardcoded paths like /tmp ")
 
 //
 // Defines Linux-specific default values. The flags are available on all

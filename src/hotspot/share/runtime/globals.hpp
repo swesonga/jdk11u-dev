@@ -2683,11 +2683,7 @@ define_pd_global(uint64_t,MaxRAM,                    1ULL*G);
           "Start flight recording with options"))                           \
                                                                             \
   experimental(bool, UseFastUnorderedTimeStamps, false,                     \
-          "Use platform unstable time where supported for timestamps only") \
-                                                                            \
-  diagnostic(ccstr, SystemTempPath, NULL,                                   \
-          "An alternative path to use for the system's temporary directory "\
-          "instead of hardcoded paths like /tmp ")
+          "Use platform unstable time where supported for timestamps only")
 
 #define VM_FLAGS(develop,                                                   \
                  develop_pd,                                                \

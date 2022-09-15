@@ -1597,7 +1597,7 @@ const char* os::dll_file_extension() { return ".so"; }
 
 // This method allows for overriding the system's temporary directory via the -XX:SystemTempPath option
 const char* os::get_temp_directory() {
-    static char* cached_temp_path = NULL;
+    static const char* cached_temp_path = NULL;
     static const char* default_tmp_path = "/tmp";
 
     if (cached_temp_path == NULL) {
