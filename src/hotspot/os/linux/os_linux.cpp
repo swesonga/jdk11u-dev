@@ -1607,9 +1607,9 @@ const char* os::get_temp_directory() {
             size_t new_tmp_path_length = strlen(SystemTempPath);
 
             assert(new_tmp_path_length > 0, "SystemTempPath must have positive length");
-            assert(new_tmp_path_length < sizeof(cached_temp_path), "SystemTempPath exceeds allowed length");
+            assert(new_tmp_path_length < MAX_CACHED_TEMP_PATH_LENGTH, "SystemTempPath exceeds allowed length");
 
-            if (new_tmp_path_length > 0 && new_tmp_path_length < sizeof(cached_temp_path)) {
+            if (new_tmp_path_length > 0 && new_tmp_path_length < MAX_CACHED_TEMP_PATH_LENGTH) {
                 struct stat stat_buf;
                 bool path_exists = os::stat(SystemTempPath, &stat_buf) == 0;
 
