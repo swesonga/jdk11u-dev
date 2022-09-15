@@ -1597,11 +1597,11 @@ const char* os::dll_file_extension() { return ".so"; }
 
 // This method allows for overriding the system's temporary directory via the -XX:SystemTempPath option
 const char* os::get_temp_directory() {
-    static char cached_temp_path[MAX_CACHED_TEMP_PATH_LENGTH] = {'\0'};
+    static char* cached_temp_path = NULL;
     static const char* default_tmp_path = "/tmp";
 
-    if (strlen(cached_temp_path) == 0) {
-        boolean use_default_tmp_path = true;
+    if (cached_temp_path == NULL) {
+        bool use_default_tmp_path = true;
 
         if (SystemTempPath != NULL) {
             size_t new_tmp_path_length = strlen(SystemTempPath);
@@ -1611,11 +1611,11 @@ const char* os::get_temp_directory() {
 
             if (new_tmp_path_length > 0 && new_tmp_path_length < sizeof(cached_temp_path)) {
                 struct stat stat_buf;
-                boolean path_exists = os::stat(SystemTempPath, &stat_buf) == 0;
+                bool path_exists = os::stat(SystemTempPath, &stat_buf) == 0;
 
                 if (path_exists) {
                     if (S_ISDIR(stat_buf.st_mode)) {
-                        if (0 == access(SystemTempPath)) {
+                        if (0 == access(SystemTempPath, R_OK | W_OK)) {
                             use_default_tmp_path = false;
                         } else {
                             warning("Cannot access the specified SystemTempPath");
@@ -1635,7 +1635,7 @@ const char* os::get_temp_directory() {
             }
         }
 
-        strcpy(cached_temp_path, use_default_tmp_path ? default_tmp_path : SystemTempPath);
+        cached_temp_path = use_default_tmp_path ? default_tmp_path : SystemTempPath;
     }
     return cached_temp_path;
 }
